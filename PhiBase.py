@@ -3,7 +3,7 @@ import math
 PHI = (1 + math.sqrt(5)) / 2 # Константа ФИ
 
 
-class Phi:
+class PhiBase:
     def __init__(self, x):
 
         allowed = '01.'  # разрешённые цифры (0, 1) и точка
@@ -35,7 +35,7 @@ def phi_to_power_n(n: int) -> float:
         return phi_to_power_n(n + 2) - phi_to_power_n(n + 1) 
 
 # Перевод из Фи-еричной системы счисления в 10-тичную
-def transfer_to_int(x: Phi) -> float:
+def transfer_to_int(x: PhiBase) -> float:
 
     s = x.x
     sum = 0.0
