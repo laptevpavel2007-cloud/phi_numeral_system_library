@@ -1,6 +1,7 @@
 import math
+from PhiNumber import _PhiNumber, PHI
+from fractions import Fraction
 
-PHI = (1 + math.sqrt(5)) / 2 # Константа ФИ
 
 # Класс числа в фи-еричной системе счисления
 class PhiBase:
@@ -34,14 +35,14 @@ class PhiBase:
     def __add__(self, other: PhiBase) -> PhiBase:
         x = self.transfer_to_int(self)
         y = self.transfer_to_int(other)
-        return self.transfer_int_to_Phi(x + y)
+        return self.transfer_to_Phi(x + y)
 
     # Вычитание чисел в фи-еричной системе счисления
     def __sub__(self, other: PhiBase) -> PhiBase:
         x = self.transfer_to_int(self)
         y = self.transfer_to_int(other)
-        if (x - y >= 0):
-            return self.transfer_int_to_Phi(x + (-y))
+        if (x > y):
+            return self.transfer_to_Phi(x - y)
         else:
             raise ValueError("Отрицательный результат вычитания не поддерживается")
 
@@ -49,15 +50,15 @@ class PhiBase:
     def __mul__(self, other: PhiBase) -> PhiBase:
         x = self.transfer_to_int(self)
         y = self.transfer_to_int(other)
-        return self.transfer_int_to_Phi(x * y)
+        return self.transfer_to_Phi(x * y)
 
             
     # Возведение числа ФИ в любую степень
     @staticmethod
-    def phi_to_power_n(n: int) -> float:
+    def phi_to_power_n(n: int) -> _PhiNumber:
 
         if n == 0:
-            return 1.0
+            return _PhiNumber(1, 0)
         if n == 1:
             return PHI
         if n > 0:
@@ -68,10 +69,10 @@ class PhiBase:
 
     # Перевод из Фи-еричной системы счисления в 10-тичную
     @staticmethod
-    def transfer_to_int(x: PhiBase) -> float:
+    def transfer_to_int(x: PhiBase) -> int:
 
         s = x.x
-        res = 0.0
+        res = 0
 
         if "." in s:
             whole = s.split(".")[0]
@@ -90,7 +91,8 @@ class PhiBase:
     
     # Нормализиция числа в Фи-еричной системы счисления в 10-тичную
     @staticmethod
-    def normalization(x: str) -> PhiBase:
+    def normalization(x: str) -> str:
+
         while "11" in x.replace('.', ''):
             if "011" in x:
                 x = x.replace("011", "100")
@@ -107,30 +109,34 @@ class PhiBase:
         return x
 
     @staticmethod
-    def transfer_int_to_Phi(x: float) -> PhiBase:
+    def transfer_to_Phi(x: int) -> PhiBase:
         
-        if x == 0:
+        x = _PhiNumber(x, 0)
+
+        if x == _PhiNumber(0, 0):
             return PhiBase("0")
 
         n = 0
-        while PHI ** (n + 1) <= x + 1e-12:
+        while PhiBase.phi_to_power_n(n + 1) <= x:
             n += 1
 
         pos_w = []
         pos_f = []
         s = x
+        max_fr = 20
 
-        while s > 1e-9:
+        while s > _PhiNumber(0, 0):
                 
-            while PHI ** n > s + 1e-9:
+            while PhiBase.phi_to_power_n(n + 1) > s and max_fr >= 0:
                 n -= 1
                     
             if n >= 0:
                 pos_w.append(n)
             else:
                 pos_f.append(n)
+                max_fr -= 1
                     
-            s -= PHI**n
+            s -= PhiBase.phi_to_power_n(n)
 
 
         if len(pos_w) > 0:
@@ -161,6 +167,3 @@ class PhiBase:
         phi_s = PhiBase.normalization(phi_s)
 
         return PhiBase(phi_s)
-
-print(PhiBase.transfer_int_to_Phi(1984))
-print(PhiBase.transfer_to_int(PhiBase.transfer_int_to_Phi(1984)))
