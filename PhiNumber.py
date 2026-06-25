@@ -51,10 +51,10 @@ class _PhiNumber:
     def __le__(self, other: "_PhiNumber") -> bool:
         return (self - other).sign() <= 0
     
-    def __rt__(self, other:"_PhiNumber") -> bool:
+    def __gt__(self, other:"_PhiNumber") -> bool:
         return(self - other).sign() > 0
     
-    def __re__(self, other:"_PhiNumber") -> bool:
+    def __ge__(self, other:"_PhiNumber") -> bool:
         return(self - other).sign() >= 0
     
     def __repr__(self) -> str:
