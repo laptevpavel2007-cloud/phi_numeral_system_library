@@ -10,6 +10,11 @@ class _PhiNumber:
         self.a: Fraction = Fraction(a)
         self.b: Fraction = Fraction(b)
 
+    @classmethod
+    def phi(cls) -> "_PhiNumber":
+        return(_PhiNumber(Fraction(1, 2), Fraction(1, 2)))
+    
+
     def __add__(self, other: "_PhiNumber") -> "_PhiNumber":
         # (a + b * sqrt(5)) + (c + d * sqrt(5)) = (a + c) + (b + d) * sqrt(5)
         return _PhiNumber(self.a + other.a, self.b + other.b)
@@ -22,10 +27,35 @@ class _PhiNumber:
         # (a + b * sqrt(5)) * (c + d * sqrt(5)) = (ac + 5bd) + (ad + bc) * sqrt(5)
         return _PhiNumber(self.a * other.a + 5 * self.b * other.b, self.a * other.b + self.b * other.a)
     
+
+    def sign(self) -> int:
+        a, b = self.a, self.b
+        if a == 0 and b == 0:
+            return 0
+        if a >= 0 and b >= 0:
+            return 1
+        if a <= 0 and b <= 0:
+            return -1
+        d = a * a - 5 * b * b
+        sa = 1 if a > 0 else -1
+        return sa * (1 if d > 0 else -1)
+    
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, _PhiNumber):
             return NotImplemented
         return self.a == other.a and self.b == other.b
+    
+    def __lt__(self, other: "_PhiNumber") -> bool:
+        return (self - other).sign() < 0
+    
+    def __le__(self, other: "_PhiNumber") -> bool:
+        return (self - other).sign() <= 0
+    
+    def __rt__(self, other:"_PhiNumber") -> bool:
+        return(self - other).sign() > 0
+    
+    def __re__(self, other:"_PhiNumber") -> bool:
+        return(self - other).sign() >= 0
     
     def __repr__(self) -> str:
         return f"_PhiNumber({self.a}, {self.b})"
