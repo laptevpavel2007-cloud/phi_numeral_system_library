@@ -1,7 +1,7 @@
-import math
-from PhiNumber import _PhiNumber, PHI
 from fractions import Fraction
+from PhiNumber import _PhiNumber
 
+PHI = _PhiNumber.phi()
 
 # Класс числа в фи-еричной системе счисления
 class PhiBase:
@@ -33,14 +33,14 @@ class PhiBase:
     
     # Сумма чисел в фи-еричной системе счисления
     def __add__(self, other: PhiBase) -> PhiBase:
-        x = self.transfer_to_int(self)
-        y = self.transfer_to_int(other)
+        x = self.transfer_to_number(self)
+        y = self.transfer_to_number(other)
         return self.transfer_to_Phi(x + y)
 
     # Вычитание чисел в фи-еричной системе счисления
     def __sub__(self, other: PhiBase) -> PhiBase:
-        x = self.transfer_to_int(self)
-        y = self.transfer_to_int(other)
+        x = self.transfer_to_number(self)
+        y = self.transfer_to_number(other)
         if (x > y):
             return self.transfer_to_Phi(x - y)
         else:
@@ -48,8 +48,8 @@ class PhiBase:
 
     # Умножение чисел в фи-еричной системе счисления
     def __mul__(self, other: PhiBase) -> PhiBase:
-        x = self.transfer_to_int(self)
-        y = self.transfer_to_int(other)
+        x = self.transfer_to_number(self)
+        y = self.transfer_to_number(other)
         return self.transfer_to_Phi(x * y)
 
             
@@ -62,17 +62,23 @@ class PhiBase:
         if n == 1:
             return PHI
         if n > 0:
-            return PhiBase.phi_to_power_n(n - 1) + PhiBase.phi_to_power_n(n - 2)  
+            a, b = _PhiNumber(1, 0), PHI
+            for i in range(2, n + 1):
+                a, b = b, a + b
+            return b
         if n < 0:
-            return PhiBase.phi_to_power_n(n + 2) - PhiBase.phi_to_power_n(n + 1) 
+            a, b =  PHI, _PhiNumber(1, 0)
+            for i in range(0, -n):
+                a, b = b, a - b
+            return b
 
 
     # Перевод из Фи-еричной системы счисления в 10-тичную
     @staticmethod
-    def transfer_to_int(x: PhiBase) -> int:
+    def transfer_to_number(x: PhiBase) -> _PhiNumber:
 
         s = x.x
-        res = 0
+        res = _PhiNumber(0, 0)
 
         if "." in s:
             whole = s.split(".")[0]
@@ -82,36 +88,50 @@ class PhiBase:
             fraction = ""
 
         for i, w in enumerate(reversed(whole)):
-            res += int(w) * PhiBase.phi_to_power_n(i)
+            res += _PhiNumber(int(w), 0) * PhiBase.phi_to_power_n(i)
 
         for i, f in enumerate(fraction, 1):
-            res += int(f) * PhiBase.phi_to_power_n(-i)
+            res += _PhiNumber(int(f), 0) * PhiBase.phi_to_power_n(-i)
 
         return res
     
     # Нормализиция числа в Фи-еричной системы счисления в 10-тичную
     @staticmethod
     def normalization(x: str) -> str:
+        s = x
+        while "11" in s.replace('.', ''):
 
-        while "11" in x.replace('.', ''):
-            if "011" in x:
-                x = x.replace("011", "100")
+            if "011" in s:
+                s = s.replace("011", "100")
 
-            if x.startswith("11"):
-                x = "100" + x[2:]
+            if (s[:2] == "11"):
+                s = "100" + s[2:]
 
-            if ".11" in x:
-                x = x.replace(".11", "1.00")
+            if ".11" in s:
+                s = s.replace(".11", "1.00")
 
-            else:
-                break 
+            if "01.1" in s:
+                s = s.replace("01.1", "10.0")
 
-        return x
+            if "0110" in s:
+                s = s.replace("0110", "1000")
+
+            if "01.10" in s:
+                s = s.replace("01.10", "10.00")
+
+        s = s.lstrip('0')
+        if s.startswith('.'):
+            s = '0' + s
+        if s.endswith('.'):
+            s = s[:-1]
+
+        return s
 
     @staticmethod
-    def transfer_to_Phi(x: int) -> PhiBase:
-        
-        x = _PhiNumber(x, 0)
+    def transfer_to_Phi(x) -> PhiBase:
+
+        if not isinstance(x, _PhiNumber):
+            x = _PhiNumber(x, 0)
 
         if x == _PhiNumber(0, 0):
             return PhiBase("0")
@@ -125,19 +145,17 @@ class PhiBase:
         s = x
         max_fr = 20
 
-        while s > _PhiNumber(0, 0):
-                
-            while PhiBase.phi_to_power_n(n + 1) > s and max_fr >= 0:
+        while s > _PhiNumber(0, 0) and max_fr >= 0:
+            while PhiBase.phi_to_power_n(n) > s and max_fr >= 0:
                 n -= 1
-                    
+
             if n >= 0:
                 pos_w.append(n)
             else:
                 pos_f.append(n)
                 max_fr -= 1
-                    
-            s -= PhiBase.phi_to_power_n(n)
 
+            s -= PhiBase.phi_to_power_n(n)
 
         if len(pos_w) > 0:
             max_w = max(pos_w)  
