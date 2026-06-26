@@ -17,14 +17,26 @@ class _PhiNumber:
 
     def __add__(self, other: "_PhiNumber") -> "_PhiNumber":
         # (a + b * sqrt(5)) + (c + d * sqrt(5)) = (a + c) + (b + d) * sqrt(5)
+
+        if not isinstance(other, _PhiNumber):
+            other = _PhiNumber(other, 0)
+
         return _PhiNumber(self.a + other.a, self.b + other.b)
     
     def __sub__(self, other: "_PhiNumber") -> "_PhiNumber":
         # (a + b * sqrt(5)) - (c + d * sqrt(5)) = (a - c) + (b - d) * sqrt(5)
+
+        if not isinstance(other, _PhiNumber):
+            other = _PhiNumber(other, 0)
+
         return _PhiNumber(self.a - other.a, self.b - other.b)
     
     def __mul__(self, other: "_PhiNumber") -> "_PhiNumber":
         # (a + b * sqrt(5)) * (c + d * sqrt(5)) = (ac + 5bd) + (ad + bc) * sqrt(5)
+
+        if not isinstance(other, _PhiNumber):
+            other = _PhiNumber(other, 0)
+
         return _PhiNumber(self.a * other.a + 5 * self.b * other.b, self.a * other.b + self.b * other.a)
     
 
@@ -59,3 +71,15 @@ class _PhiNumber:
     
     def __repr__(self) -> str:
         return f"_PhiNumber({self.a}, {self.b})"
+    
+    def __str__(self) -> str:
+        if self.b == 0:
+            return f"{self.a}"
+        else:
+            if self.a == 0:
+                return f"{self.b}√5"
+            else:
+                if self.b > 0:
+                    return f"{self.a} + {self.b}√5"
+                else:
+                    return f"{self.a} - {self.b}√5"
