@@ -5,13 +5,33 @@
 
 ### Локальный запуск
 
-1. Клонируйте репозиторий 
-    ```bash
-    git clone git@github.com:laptevpavel2007-cloud/phi_numeral_system_library.git
+## Для пользователей
 
-ИЛИ. Установите с TestPyPi:
-    ```bash
-    pip install -i -----------------
+```bash
+pip install -i .....
+```
+
+## Для разработки
+
+Проект использует [uv](https://docs.astral.sh/uv/) для управления окружением и зависимостями.
+
+1. Установите uv (если не установлен):
+```bash
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+2. Клонируйте репозиторий и перейдите в папку проекта:
+```bash
+   git clone git@github.com:laptevpavel2007-cloud/phi_numeral_system_library.git
+   cd phi_numeral_system_library
+```
+3. Создайте окружение и установите зависимости:
+```bash
+   uv sync
+```
+4. Запустите тесты:
+```bash
+   uv run pytest
+```
 
 
 ### Команды библиотеки
