@@ -23,7 +23,7 @@
 ## Для пользователей
 
 ```bash
-pip install -i .....
+pip install phi-numeral-system-library==0.1.0
 ```
 
 ## Для разработки
